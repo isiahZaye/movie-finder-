@@ -1,15 +1,8 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
-import './App.css';
-import MovieList from './Components/MovieList';
-import Maybe from './Components/Maybe.js';
-import Definitely from './Components/Definitely.js';
-import MyMovies from './Components/MyMovies';
-import Modal from './Components/Modal';
-import MyProvider from './Components/Provider';
-import { MyContext } from './Components/Provider';
 
-class App extends Component {
+export const MyContext = React.createContext()
+
+class Provider extends Component {
 
   constructor() {
     super()
@@ -304,29 +297,20 @@ class App extends Component {
     )
 
     return (
-      <MyProvider>
-        <div className='top-area'>
-          <Router>
-            <nav>
-              <Link className='link' to="/">Find Movies</Link>
-              <Link className='link' to="/Maybe">Maybe</Link>
-              <Link className='link' to="/Definitely">Definitely</Link>
-              <Link className='link' to="/Watched">Watched</Link>
-            </nav>
-            <Route exact path='/' render={() => inputArea}/>
-            <Switch>
-              <Route exact path='/' render={() => <MovieList data={this.state.data} getMovieInfo={this.getMovieInfo} newQuote={this.quoteToFillTheSpace}/>} />
-              <Route path='/Maybe' render={() => <Maybe data={this.state} getMovieInfo={this.getMovieInfo} newQuote={this.quoteToFillTheSpace}/>} />
-              <Route path='/Definitely' render={() => <Definitely data={this.state} getMovieInfo={this.getMovieInfo} newQuote={this.quoteToFillTheSpace}/>} />
-              <Route path='/Watched' render={() => <MyMovies data={this.state} getMovieInfo={this.getMovieInfo} newQuote={this.quoteToFillTheSpace}/> } />
-            </Switch>
-            <Route exact path='/' render={() => data.hasOwnProperty('Search') && data.Search.length > 0 ? pageScroll : ''}/>
-          </Router>
-          {this.state.modal ? <Modal data={this.state} getMovieInfo={this.getMovieInfo} categorize={this.categorize} /> : ''}
-        </div>
-      </MyProvider>
+      <MyContext.Provider
+        value={this.state}
+        handleChange={this.handleChange}
+        randomPageFetch={this.randomPageFetch}
+        handleSubmit={this.handleSubmit}
+        switchPage={this.switchPage}
+        getMovieInfo={this.getMovieInfo}
+        categorize={this.categorize}
+        quoteToFillTheSpace={this.quoteToFillTheSpace}
+      >
+        {this.props.children}
+      </MyContext.Provider>
     )
   }
 }
 
-export default App;
+export default Provider;
